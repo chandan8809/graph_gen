@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
 export default function ExcelLikeTableWithChartOptions() {
+  const [page, setPage] = useState(1);
   // Initial table data from the image with one extra empty row and column
   const [tableData, setTableData] = useState([
     ['', 'January', 'February', 'March', 'April', ''],
@@ -21,17 +22,35 @@ export default function ExcelLikeTableWithChartOptions() {
   const [selectedCell, setSelectedCell] = useState(null);
   const [editValue, setEditValue] = useState('');
 
-  // Handle chart type change
+  // Handle chart type change and move to next page
   const handleChartTypeChange = (type) => {
     setChartType(type);
+    setPage(2);
   };
 
   // Handle chart download
   const handleDownloadChart = () => {
     if (chartRef.current) {
+      // Create a temporary canvas to draw white background
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      const originalCanvas = chartRef.current;
+      
+      // Set dimensions
+      tempCanvas.width = originalCanvas.width;
+      tempCanvas.height = originalCanvas.height;
+      
+      // Fill white background
+      tempCtx.fillStyle = 'white';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      
+      // Draw original chart on top
+      tempCtx.drawImage(originalCanvas, 0, 0);
+      
+      // Create download link with white background version
       const link = document.createElement('a');
       link.download = `chart-${Date.now()}.png`;
-      link.href = chartRef.current.toDataURL('image/png');
+      link.href = tempCanvas.toDataURL('image/png');
       link.click();
     }
   };
@@ -56,6 +75,16 @@ export default function ExcelLikeTableWithChartOptions() {
     setJsonData(json);
   }, [tableData]);
 
+  // Color palette for different rows
+  const colors = [
+    { bg: 'rgba(54, 162, 235, 0.5)', border: 'rgb(54, 162, 235)' },
+    { bg: 'rgba(255, 99, 132, 0.5)', border: 'rgb(255, 99, 132)' },
+    { bg: 'rgba(75, 192, 192, 0.5)', border: 'rgb(75, 192, 192)' },
+    { bg: 'rgba(255, 206, 86, 0.5)', border: 'rgb(255, 206, 86)' },
+    { bg: 'rgba(153, 102, 255, 0.5)', border: 'rgb(153, 102, 255)' },
+    { bg: 'rgba(255, 159, 64, 0.5)', border: 'rgb(255, 159, 64)' }
+  ];
+
   // Update chart when data changes or chart type changes
   useEffect(() => {
     if (!chartRef.current) return;
@@ -69,53 +98,92 @@ export default function ExcelLikeTableWithChartOptions() {
     const labels = tableData[0].slice(1, -1).filter(label => label !== '');
     
     const datasets = [];
-    for (let i = 1; i < tableData.length - 1; i++) {
-      const rowLabel = tableData[i][0];
-      if (rowLabel) {
-        const data = [];
-        for (let j = 1; j < tableData[0].length - 1; j++) {
-          if (tableData[0][j] !== '') {
-            const value = parseFloat(tableData[i][j]) || 0;
-            data.push(value);
+    const singleRowData = [];
+    
+    // Get first row data for single dataset charts
+    for (let j = 1; j < tableData[0].length - 1; j++) {
+      if (tableData[0][j] !== '') {
+        const value = parseFloat(tableData[1][j]) || 0;
+        singleRowData.push(value);
+      }
+    }
+
+    // Configure datasets based on chart type
+    if (['pie', 'doughnut', 'polarArea', 'radar'].includes(chartType)) {
+      datasets.push({
+        data: singleRowData,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.5)',
+          'rgba(54, 162, 235, 0.5)',
+          'rgba(255, 206, 86, 0.5)',
+          'rgba(75, 192, 192, 0.5)'
+        ],
+        borderColor: [
+          'rgb(255, 99, 132)',
+          'rgb(54, 162, 235)',
+          'rgb(255, 206, 86)',
+          'rgb(75, 192, 192)'
+        ],
+        borderWidth: 1
+      });
+    } else {
+      // For other chart types, use multiple datasets
+      let colorIndex = 0;
+      for (let i = 1; i < tableData.length - 1; i++) {
+        const rowLabel = tableData[i][0];
+        if (rowLabel) {
+          const data = [];
+          for (let j = 1; j < tableData[0].length - 1; j++) {
+            if (tableData[0][j] !== '') {
+              const value = parseFloat(tableData[i][j]) || 0;
+              data.push(value);
+            }
           }
+          
+          datasets.push({
+            label: rowLabel,
+            data: data,
+            backgroundColor: colors[colorIndex % colors.length].bg,
+            borderColor: colors[colorIndex % colors.length].border,
+            borderWidth: ['line', 'radar'].includes(chartType) ? 2 : 1,
+            tension: ['line', 'radar'].includes(chartType) ? 0.1 : 0,
+            fill: ['line', 'radar'].includes(chartType) ? false : true
+          });
+          colorIndex++;
         }
-        
-        datasets.push({
-          label: rowLabel,
-          data: data,
-          backgroundColor: i === 1 ? 'rgba(54, 162, 235, 0.5)' : 'rgba(255, 99, 132, 0.5)',
-          borderColor: i === 1 ? 'rgb(54, 162, 235)' : 'rgb(255, 99, 132)',
-          borderWidth: chartType === 'line' ? 2 : 1,
-          tension: chartType === 'line' ? 0.1 : 0, // Slight curve for line charts
-          fill: chartType === 'line' ? false : true
-        });
       }
     }
     
-    // Create new chart
+    // Create new chart with type-specific options
+    const options = {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: `Data Visualization (${chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart)`
+        },
+        legend: {
+          position: 'top',
+        }
+      }
+    };
+
+    // Add specific options based on chart type
+    if (!['pie', 'doughnut', 'polarArea'].includes(chartType)) {
+      options.scales = {
+        y: {
+          beginAtZero: true
+        }
+      };
+    }
+
     chartInstance.current = new Chart(chartRef.current, {
       type: chartType,
       data: {
         labels: labels,
         datasets: datasets
       },
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: `Data Visualization (${chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart)`
-          },
-          legend: {
-            position: 'top',
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
+      options: options
     });
     
     return () => {
@@ -182,9 +250,74 @@ export default function ExcelLikeTableWithChartOptions() {
     }
   };
 
+  // Handle going back to chart selection
+  const handleBack = () => {
+    setPage(1);
+  };
+
+  if (page === 1) {
+    return (
+      <div className="flex flex-col items-center p-4 w-full min-h-screen">
+        <h2 className="text-2xl font-bold mb-8">Select Chart Type</h2>
+        <div className="grid grid-cols-3 gap-8">
+          <button 
+            className="p-8 rounded-lg shadow-lg bg-white hover:bg-blue-50 border-2 border-blue-500 transition-all"
+            onClick={() => handleChartTypeChange('bar')}
+          >
+            <div className="text-6xl mb-4">📊</div>
+            <div className="text-xl font-semibold">Bar Chart</div>
+          </button>
+          <button 
+            className="p-8 rounded-lg shadow-lg bg-white hover:bg-blue-50 border-2 border-blue-500 transition-all"
+            onClick={() => handleChartTypeChange('line')}
+          >
+            <div className="text-6xl mb-4">📈</div>
+            <div className="text-xl font-semibold">Line Chart</div>
+          </button>
+          <button 
+            className="p-8 rounded-lg shadow-lg bg-white hover:bg-blue-50 border-2 border-blue-500 transition-all"
+            onClick={() => handleChartTypeChange('pie')}
+          >
+            <div className="text-6xl mb-4">🥧</div>
+            <div className="text-xl font-semibold">Pie Chart</div>
+          </button>
+          <button 
+            className="p-8 rounded-lg shadow-lg bg-white hover:bg-blue-50 border-2 border-blue-500 transition-all"
+            onClick={() => handleChartTypeChange('doughnut')}
+          >
+            <div className="text-6xl mb-4">🍩</div>
+            <div className="text-xl font-semibold">Doughnut Chart</div>
+          </button>
+          <button 
+            className="p-8 rounded-lg shadow-lg bg-white hover:bg-blue-50 border-2 border-blue-500 transition-all"
+            onClick={() => handleChartTypeChange('polarArea')}
+          >
+            <div className="text-6xl mb-4">🎯</div>
+            <div className="text-xl font-semibold">Polar Area</div>
+          </button>
+          <button 
+            className="p-8 rounded-lg shadow-lg bg-white hover:bg-blue-50 border-2 border-blue-500 transition-all"
+            onClick={() => handleChartTypeChange('radar')}
+          >
+            <div className="text-6xl mb-4">📡</div>
+            <div className="text-xl font-semibold">Radar Chart</div>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center p-4 w-full">
-      <h2 className="text-xl font-bold mb-4">Excel-like Table with Chart</h2>
+      <div className="w-full flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Excel-like Table with Chart</h2>
+        <button 
+          onClick={handleBack}
+          className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+        >
+          Change Chart Type
+        </button>
+      </div>
       
       <div className="w-full overflow-x-auto mb-8">
         <table className="border-collapse w-full">
@@ -194,7 +327,11 @@ export default function ExcelLikeTableWithChartOptions() {
                 {row.map((cell, colIndex) => (
                   <td 
                     key={colIndex}
-                    className={`border border-gray-300 p-2 h-10 min-w-16 ${
+                    className={`border ${
+                      selectedCell?.row === rowIndex && selectedCell?.col === colIndex
+                        ? 'border-blue-500 border-2'
+                        : 'border-gray-300'
+                    } p-1 h-10 w-32 ${
                       rowIndex === 0 || colIndex === 0 
                         ? 'bg-gray-100 font-medium' 
                         : 'bg-white'
@@ -210,7 +347,7 @@ export default function ExcelLikeTableWithChartOptions() {
                         onChange={handleCellChange}
                         onBlur={handleEndEdit}
                         onKeyPress={handleKeyPress}
-                        className="w-full h-full border-none p-0 focus:outline-none"
+                        className="w-full h-full border-none p-0 focus:outline-none bg-transparent"
                         autoFocus
                       />
                     ) : (
@@ -227,42 +364,17 @@ export default function ExcelLikeTableWithChartOptions() {
       <div className="w-full mb-8">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold">Chart Visualization</h3>
-          <div className="flex space-x-2">
-            <button 
-              className={`px-4 py-2 rounded ${chartType === 'bar' 
-                ? 'bg-blue-500 text-white' 
-                : 'bg-gray-200 hover:bg-gray-300'}`}
-              onClick={() => handleChartTypeChange('bar')}
-            >
-              Bar Chart
-            </button>
-            <button 
-              className={`px-4 py-2 rounded ${chartType === 'line' 
-                ? 'bg-blue-500 text-white' 
-                : 'bg-gray-200 hover:bg-gray-300'}`}
-              onClick={() => handleChartTypeChange('line')}
-            >
-              Line Chart
-            </button>
-            <button
-              className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600"
-              onClick={handleDownloadChart}
-            >
-              Download Chart
-            </button>
-          </div>
+          <button
+            className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600"
+            onClick={handleDownloadChart}
+          >
+            Download Chart
+          </button>
         </div>
-        <div className="bg-white p-4 rounded shadow w-full" style={{ height: '400px' }}>
+        <div className="bg-white p-4 rounded shadow w-full" style={{ height: '600px' }}>
           <canvas ref={chartRef}></canvas>
         </div>
       </div>
-      
-      {/* <div className="text-left w-full">
-        <h3 className="font-semibold mb-2">Current JSON Data:</h3>
-        <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
-          {JSON.stringify(jsonData, null, 2)}
-        </pre>
-      </div> */}
     </div>
   );
 }
