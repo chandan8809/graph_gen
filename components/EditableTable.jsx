@@ -20,7 +20,7 @@ const EditableTable = ({ tableData, selectedCell, editValue, onCellClick, onCell
                   {selectedCell &&
                    selectedCell.row === rowIndex &&
                    selectedCell.col === colIndex ? (
-                    <div className="w-full h-full  border border-gray-300">
+                    <div className="w-full h-full">
                       <input
                         type="text"
                         value={editValue}

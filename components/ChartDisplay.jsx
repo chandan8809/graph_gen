@@ -1,6 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
+const colors = [
+    { bg: 'rgba(54, 162, 235, 0.5)', border: 'rgb(54, 162, 235)' },
+    { bg: 'rgba(255, 99, 132, 0.5)', border: 'rgb(255, 99, 132)' },
+    { bg: 'rgba(75, 192, 192, 0.5)', border: 'rgb(75, 192, 192)' },
+    { bg: 'rgba(255, 206, 86, 0.5)', border: 'rgb(255, 206, 86)' },
+    { bg: 'rgba(153, 102, 255, 0.5)', border: 'rgb(153, 102, 255)' },
+    { bg: 'rgba(255, 159, 64, 0.5)', border: 'rgb(255, 159, 64)' }
+  ];
+
 const ChartDisplay = ({ chartType, tableData, onDownload }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
@@ -46,6 +55,7 @@ const ChartDisplay = ({ chartType, tableData, onDownload }) => {
       });
     } else {
       // For other chart types, use multiple datasets
+      let colorIndex = 0;
       for (let i = 1; i < tableData.length - 1; i++) {
         const rowLabel = tableData[i][0];
         if (rowLabel) {
@@ -60,12 +70,13 @@ const ChartDisplay = ({ chartType, tableData, onDownload }) => {
           datasets.push({
             label: rowLabel,
             data: data,
-            backgroundColor: i === 1 ? 'rgba(54, 162, 235, 0.5)' : 'rgba(255, 99, 132, 0.5)',
-            borderColor: i === 1 ? 'rgb(54, 162, 235)' : 'rgb(255, 99, 132)',
+            backgroundColor: colors[colorIndex % colors.length].bg,
+            borderColor: colors[colorIndex % colors.length].border,
             borderWidth: ['line', 'radar'].includes(chartType) ? 2 : 1,
             tension: ['line', 'radar'].includes(chartType) ? 0.1 : 0,
             fill: ['line', 'radar'].includes(chartType) ? false : true
           });
+          colorIndex++;
         }
       }
     }
@@ -108,7 +119,7 @@ const ChartDisplay = ({ chartType, tableData, onDownload }) => {
   }, [tableData, chartType]);
 
   return (
-    <div className="w-full mb-8 border border-gray-300">
+    <div className="w-full mb-8 ">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-semibold">Chart Visualization</h3>
         <button
@@ -118,7 +129,7 @@ const ChartDisplay = ({ chartType, tableData, onDownload }) => {
           Download Chart
         </button>
       </div>
-      <div className="bg-white p-4 rounded shadow w-full" style={{ height: '600px' }}>
+      <div className="bg-white p-4 rounded  w-full" style={{ height: '600px' }}>
         <canvas ref={chartRef}></canvas>
       </div>
     </div>

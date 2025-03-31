@@ -86,7 +86,7 @@ export default function ExcelLikeTableWithChartOptions() {
   }
 
   return (
-    <div className="flex flex-col items-center p-4 w-full">
+    <div className="flex flex-col items-center p-4 w-full screen-lg lg:px-12 py-6">
       <div className="w-full flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Excel-like Table with Chart</h2>
         <button 

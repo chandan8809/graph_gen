@@ -1,14 +1,16 @@
 
+import ChartVisualizer from "@/components/HomePage";
 import MainContainer from "@/components/MainContainer";
-import ExcelLikeTableWithChartOptions from "@/components/InputSheets";
+// import ExcelLikeTableWithChartOptions from "@/components/InputSheets";
 
 
 export default function Home() {
   return (
     
     <div>
-      <ExcelLikeTableWithChartOptions/>
-     {/* <MainContainer/> */}
+      {/* <ExcelLikeTableWithChartOptions/> */}
+      <ChartVisualizer/>
+     <MainContainer/>
     </div>
   );
 }
