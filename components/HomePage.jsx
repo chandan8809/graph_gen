@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, PieChart, BarChart2, TrendingUp, Activity, AreaChart, Maximize, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/router';
 
 const ChartVisualizer = () => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const router = useRouter();
   
   useEffect(() => {
     setIsLoaded(true);
@@ -186,9 +188,9 @@ const ChartVisualizer = () => {
                 chart.type === 'doughnut' ? 'displaying proportions with emphasis on central space' : 
                 chart.type === 'polarArea' ? 'comparing multiple variables' : 
                 'displaying multivariate data in a circular format'}</p>
-              <button className="mt-4 inline-flex items-center py-2 px-4 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-md hover:shadow-lg transition transform hover:-translate-y-1 group">
+              <button onClick={() => router.push({pathname: `/chart/${chart.type}`})} className="mt-4 inline-flex items-center py-2 px-4 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-md hover:shadow-lg transition transform hover:-translate-y-1 group">
                 Select
-                <ChevronRight className="ml-1 w-4 h-4 group-hover:ml-2 transition-all" />
+                <ChevronRight  className="ml-1 w-4 h-4 group-hover:ml-2 transition-all" />
               </button>
             </div>
           ))}

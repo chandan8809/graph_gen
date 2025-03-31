@@ -10,7 +10,7 @@ const colors = [
     { bg: 'rgba(255, 159, 64, 0.5)', border: 'rgb(255, 159, 64)' }
   ];
 
-const ChartDisplay = ({ chartType, tableData, onDownload }) => {
+const ChartDisplay = ({ chartType="bar", tableData, onDownload }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -86,7 +86,7 @@ const ChartDisplay = ({ chartType, tableData, onDownload }) => {
       plugins: {
         title: {
           display: true,
-          text: `Data Visualization (${chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart)`
+          text: `Data Visualization (${chartType?.charAt(0).toUpperCase() + chartType?.slice(1)} Chart)`
         },
         legend: {
           position: 'top',

@@ -1,24 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import ChartSelectionPage from './ChartSelectionPage';
+import React, { useState } from 'react';
+import { Activity } from 'lucide-react';
 import EditableTable from './EditableTable';
 import ChartDisplay from './ChartDisplay';
 
-export default function ExcelLikeTableWithChartOptions() {
-  const [page, setPage] = useState(1);
+export default function ExcelLikeTableWithChartOptions({ chartType }) {
+ 
   const [tableData, setTableData] = useState([
     ['', 'January', 'February', 'March', 'April', ''],
     ['2023', '65', '8', '90', '81', ''],
     ['2024', '219', '48', '40', '19', ''],
     ['', '', '', '', '', '']
   ]);
-  const [chartType, setChartType] = useState('bar');
+ 
   const [selectedCell, setSelectedCell] = useState(null);
   const [editValue, setEditValue] = useState('');
-
-  const handleChartTypeChange = (type) => {
-    setChartType(type);
-    setPage(2);
-  };
 
   const handleDownloadChart = () => {
     const canvas = document.querySelector('canvas');
@@ -77,41 +72,55 @@ export default function ExcelLikeTableWithChartOptions() {
     }
   };
 
-  const handleBack = () => {
-    setPage(1);
-  };
-
-  if (page === 1) {
-    return <ChartSelectionPage onChartTypeChange={handleChartTypeChange} />;
-  }
-
   return (
-    <div className="flex flex-col items-center p-4 w-full screen-lg lg:px-12 py-6">
-      <div className="w-full flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Excel-like Table with Chart</h2>
-        <button 
-          onClick={handleBack}
-          className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
-        >
-          Change Chart Type
-        </button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-800 overflow-hidden">
+      {/* Subtle particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+       
       </div>
-      
-      <EditableTable
-        tableData={tableData}
-        selectedCell={selectedCell}
-        editValue={editValue}
-        onCellClick={handleCellClick}
-        onCellChange={handleCellChange}
-        onEndEdit={handleEndEdit}
-        onKeyPress={handleKeyPress}
-      />
 
-      <ChartDisplay
-        chartType={chartType}
-        tableData={tableData}
-        onDownload={handleDownloadChart}
-      />
+      {/* Header */}
+      <header className="container mx-auto px-6 py-4 flex justify-between items-center relative z-10">
+        <div className="flex items-center">
+          <div className="bg-blue-500 rounded-lg p-2">
+            <Activity className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="ml-3 text-2xl font-bold text-blue-600">ChartCraft</h1>
+        </div>
+      </header>
+
+      <div className="container mx-auto flex flex-col items-center p-4 w-full screen-lg lg:p-10">
+        <EditableTable
+          tableData={tableData}
+          selectedCell={selectedCell}
+          editValue={editValue}
+          onCellClick={handleCellClick}
+          onCellChange={handleCellChange}
+          onEndEdit={handleEndEdit}
+          onKeyPress={handleKeyPress}
+        />
+
+        <ChartDisplay
+          chartType={chartType}
+          tableData={tableData}
+          onDownload={handleDownloadChart}
+        />
+      </div>
+
+      {/* Footer */}
+      <footer className="container mx-auto px-6 py-12 relative z-10 border-t border-blue-100">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="flex items-center mb-6 md:mb-0">
+            <div className="bg-blue-500 rounded-lg p-2">
+              <Activity className="h-6 w-6 text-white" />
+            </div>
+            <h2 className="ml-3 text-xl font-bold text-blue-600">ChartCraft</h2>
+          </div>
+          <div className="text-sm text-gray-600">
+            © {new Date().getFullYear()} ChartCraft. All rights reserved.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
