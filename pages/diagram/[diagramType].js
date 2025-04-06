@@ -16,7 +16,12 @@ export async function getServerSideProps(context) {
     'deployment', 
     'activity', 
     'sequence', 
-    'component'
+    'component',
+    'erd',
+    'database',
+    'network',
+    'dataflow',
+    'block'
   ];
   
   if (!validTypes.includes(diagramType)) {

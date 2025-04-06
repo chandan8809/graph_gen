@@ -11,6 +11,11 @@ const DeploymentDiagram = dynamic(() => import('../charts/Diagrams/deployment_di
 const ActivityDiagram = dynamic(() => import('../charts/Diagrams/activity_diagram'), { ssr: false });
 const SequenceDiagram = dynamic(() => import('../charts/Diagrams/sequence_diagram'), { ssr: false });
 const ComponentDiagram = dynamic(() => import('../charts/Diagrams/component_diagram'), { ssr: false });
+const ERDDiagram = dynamic(() => import('../charts/Diagrams/erd_diagram'), { ssr: false });
+const DatabaseSchemaDiagram = dynamic(() => import('../charts/Diagrams/database_schema_diagram'), { ssr: false });
+const NetworkDiagram = dynamic(() => import('../charts/Diagrams/network_diagram'), { ssr: false });
+const DataFlowDiagram = dynamic(() => import('../charts/Diagrams/data_flow_diagram'), { ssr: false });
+const BlockDiagram = dynamic(() => import('../charts/Diagrams/block_diagram'), { ssr: false });
 
 const DiagramsContainer = ({ diagramType }) => {
   // No global mermaid initialization here - each component handles its own
@@ -35,6 +40,16 @@ const DiagramsContainer = ({ diagramType }) => {
           return <SequenceDiagram />;
         case 'component':
           return <ComponentDiagram />;
+        case 'erd':
+          return <ERDDiagram />;
+        case 'database':
+          return <DatabaseSchemaDiagram />;
+        case 'network':
+          return <NetworkDiagram />;
+        case 'dataflow':
+          return <DataFlowDiagram />;
+        case 'block':
+          return <BlockDiagram />;
         default:
           return null;
       }
@@ -121,6 +136,41 @@ const DiagramsContainer = ({ diagramType }) => {
             <ComponentDiagram />
           </div>
         </section>
+        
+        <section id="erd-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Entity-Relationship Diagram</h2>
+            <ERDDiagram />
+          </div>
+        </section>
+        
+        <section id="database-schema-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Database Schema Diagram</h2>
+            <DatabaseSchemaDiagram />
+          </div>
+        </section>
+        
+        <section id="network-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Network Diagram</h2>
+            <NetworkDiagram />
+          </div>
+        </section>
+        
+        <section id="dataflow-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Data Flow Diagram</h2>
+            <DataFlowDiagram />
+          </div>
+        </section>
+        
+        <section id="block-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Block Diagram</h2>
+            <BlockDiagram />
+          </div>
+        </section>
       </div>
       
       <div className="mt-12 bg-white rounded-lg shadow-md p-6">
@@ -161,6 +211,26 @@ const DiagramsContainer = ({ diagramType }) => {
           <div className="border border-gray-200 rounded-lg p-4">
             <h3 className="text-lg font-medium mb-2">Component Diagrams</h3>
             <p className="text-gray-600">Describe how components are wired together to form larger components or software systems.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Entity-Relationship Diagrams</h3>
+            <p className="text-gray-600">Show the relationships between entities and their attributes in a database.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Database Schema Diagrams</h3>
+            <p className="text-gray-600">Illustrate the structure of a database with tables, columns, and their relationships.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Network Diagrams</h3>
+            <p className="text-gray-600">Visualize the physical or logical network infrastructure with devices and connections.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Data Flow Diagrams</h3>
+            <p className="text-gray-600">Show how data moves through information systems, processes, and data stores.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Block Diagrams</h3>
+            <p className="text-gray-600">Represent systems using blocks connected by lines to show relationships between components.</p>
           </div>
         </div>
       </div>
