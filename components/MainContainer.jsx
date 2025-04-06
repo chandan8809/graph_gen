@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import { Activity } from 'lucide-react';
 import EditableTable from './EditableTable';
 import ChartDisplay from './ChartDisplay';
+import BarChart from '@/charts/Basic_charts/Bar';
+import DoughnutChart from '@/charts/Basic_charts/Doughnut';
+import LineChart from '@/charts/Basic_charts/Line';
+import PieChart from '@/charts/Basic_charts/Pie';
+import PolarAreaChart from '@/charts/Basic_charts/PolarArea';
+import RadarChart from '@/charts/Basic_charts/Radar';
+
 
 export default function ExcelLikeTableWithChartOptions({ chartType }) {
  
@@ -72,6 +79,25 @@ export default function ExcelLikeTableWithChartOptions({ chartType }) {
     }
   };
 
+  const renderChart = () => {
+    switch(chartType) {
+      case 'bar':
+        return <BarChart tableData={tableData} onDownload={handleDownloadChart}/>;
+      case 'doughnut':
+        return <DoughnutChart tableData={tableData} onDownload={handleDownloadChart}/>;
+      case 'line':
+        return <LineChart tableData={tableData} onDownload={handleDownloadChart}/>;
+      case 'pie':
+        return <PieChart tableData={tableData} onDownload={handleDownloadChart}/>;
+      case 'polarArea':
+        return <PolarAreaChart tableData={tableData} onDownload={handleDownloadChart}/>;
+      case 'radar':
+        return <RadarChart tableData={tableData} onDownload={handleDownloadChart}/>;
+      default:
+        return <BarChart tableData={tableData} onDownload={handleDownloadChart}/>;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-800 overflow-hidden">
       {/* Subtle particles */}
@@ -100,11 +126,7 @@ export default function ExcelLikeTableWithChartOptions({ chartType }) {
           onKeyPress={handleKeyPress}
         />
 
-        <ChartDisplay
-          chartType={chartType}
-          tableData={tableData}
-          onDownload={handleDownloadChart}
-        />
+        {renderChart()}
       </div>
 
       {/* Footer */}
