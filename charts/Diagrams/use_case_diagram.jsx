@@ -1,24 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 
-const ClassDiagram = () => {
+const UseCaseDiagram = () => {
   const [diagramCode, setDiagramCode] = useState(
-    `classDiagram
-    class Animal {
-      +String name
-      +int age
-      +makeSound()
-    }
-    class Dog {
-      +String breed
-      +fetch()
-    }
-    class Cat {
-      +String color
-      +scratch()
-    }
-    Animal <|-- Dog
-    Animal <|-- Cat`
+    `graph TB
+    Customer(["Customer"])
+    Admin(["Admin"])
+    ShippingClerk(["Shipping Clerk"])
+    
+    UC1["Browse Products"]
+    UC2["Search Products"]
+    UC3["Add to Cart"]
+    UC4["Checkout"]
+    UC5["Manage Orders"]
+    UC6["Process Refund"]
+    UC7["Update Inventory"]
+    
+    subgraph "E-Commerce System"
+    UC1
+    UC2
+    UC3
+    UC4
+    UC5
+    UC6
+    UC7
+    end
+    
+    Customer --- UC1
+    Customer --- UC2
+    Customer --- UC3
+    Customer --- UC4
+    Admin --- UC5
+    Admin --- UC6
+    Admin --- UC7
+    ShippingClerk --- UC5
+    ShippingClerk --- UC7
+    
+    UC3 -.->|includes| UC2
+    UC4 -.->|includes| UC3`
   );
   
   const [error, setError] = useState(null);
@@ -69,7 +88,7 @@ const ClassDiagram = () => {
   return (
     <div className="w-full">
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Class Diagram Editor</h2>
+        <h2 className="text-2xl font-semibold mb-4">Use Case Diagram Editor</h2>
         <div className="bg-white p-5 rounded-lg shadow-md">
           <div className="flex justify-between items-center mb-4">
             <label htmlFor="diagram-code" className="text-lg font-medium">Mermaid Diagram Code:</label>
@@ -85,7 +104,7 @@ const ClassDiagram = () => {
             value={diagramCode}
             onChange={handleCodeChange}
             className="w-full h-64 p-4 border border-gray-300 rounded font-mono text-sm"
-            placeholder="Enter your class diagram code here..."
+            placeholder="Enter your use case diagram code here..."
           />
           {error && (
             <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
@@ -105,16 +124,15 @@ const ClassDiagram = () => {
       <div className="mt-8 bg-white p-5 rounded-lg shadow-md">
         <h3 className="text-xl font-semibold mb-4">Syntax Guide</h3>
         <div className="prose max-w-none">
-          <p>Use the Mermaid syntax to define your class diagram. Here's a quick reference:</p>
+          <p>Use the Mermaid graph syntax to define your use case diagram:</p>
           <ul className="list-disc pl-5 space-y-2">
-            <li><code>class ClassName</code> - Define a class</li>
-            <li><code>+String attributeName</code> - Public attribute</li>
-            <li><code>-int privateField</code> - Private attribute</li>
-            <li><code>+methodName()</code> - Method</li>
-            <li><code>ClassA &lt;|-- ClassB</code> - Inheritance (ClassB inherits from ClassA)</li>
-            <li><code>ClassA *-- ClassB</code> - Composition</li>
-            <li><code>ClassA o-- ClassB</code> - Aggregation</li>
-            <li><code>ClassA &lt;-- ClassB</code> - Association</li>
+            <li><code>Customer([&quot;Customer&quot;])</code> - Define an actor</li>
+            <li><code>UC1[&quot;Use Case Name&quot;]</code> - Define a use case</li>
+            <li><code>subgraph &quot;System Name&quot; ... end</code> - Define system boundary</li>
+            <li><code>Actor --- UseCase</code> - Connect actor to use case</li>
+            <li><code>UseCase1 -.{'>'}|extends| UseCase2</code> - Extends relationship</li>
+            <li><code>UseCase1 -.{'>'}|includes| UseCase2</code> - Includes relationship</li>
+            <li><code>Note right of UseCase: Text</code> - Add a note</li>
           </ul>
         </div>
       </div>
@@ -122,4 +140,4 @@ const ClassDiagram = () => {
   );
 };
 
-export default ClassDiagram;
+export default UseCaseDiagram;

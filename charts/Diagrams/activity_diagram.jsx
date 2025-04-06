@@ -1,24 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 
-const ClassDiagram = () => {
+const ActivityDiagram = () => {
   const [diagramCode, setDiagramCode] = useState(
-    `classDiagram
-    class Animal {
-      +String name
-      +int age
-      +makeSound()
-    }
-    class Dog {
-      +String breed
-      +fetch()
-    }
-    class Cat {
-      +String color
-      +scratch()
-    }
-    Animal <|-- Dog
-    Animal <|-- Cat`
+    `flowchart TD
+    Start([Start]) --> CheckStock{Check Stock}
+    
+    CheckStock -->|In Stock| ProcessOrder[Process Order]
+    CheckStock -->|Out of Stock| Reorder[Reorder Items]
+    
+    Reorder --> Notify[Notify Vendor]
+    Notify --> Wait[Wait for Delivery]
+    Wait --> ReceiveItems[Receive Items]
+    ReceiveItems --> UpdateInventory[Update Inventory]
+    UpdateInventory --> ProcessOrder
+    
+    ProcessOrder --> PrepareShipment[Prepare Shipment]
+    PrepareShipment --> Ship[Ship Order]
+    Ship --> SendEmail[Send Email Notification]
+    SendEmail --> MarkComplete[Mark as Complete]
+    MarkComplete --> End([End])
+    
+    style Start fill:#4CAF50,stroke:#388E3C,color:#fff
+    style End fill:#F44336,stroke:#D32F2F,color:#fff
+    style CheckStock fill:#FFEB3B,stroke:#FBC02D
+    style ProcessOrder fill:#2196F3,stroke:#1976D2
+    style Ship fill:#9C27B0,stroke:#7B1FA2,color:#fff`
   );
   
   const [error, setError] = useState(null);
@@ -69,7 +76,7 @@ const ClassDiagram = () => {
   return (
     <div className="w-full">
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Class Diagram Editor</h2>
+        <h2 className="text-2xl font-semibold mb-4">Activity Diagram Editor</h2>
         <div className="bg-white p-5 rounded-lg shadow-md">
           <div className="flex justify-between items-center mb-4">
             <label htmlFor="diagram-code" className="text-lg font-medium">Mermaid Diagram Code:</label>
@@ -85,7 +92,7 @@ const ClassDiagram = () => {
             value={diagramCode}
             onChange={handleCodeChange}
             className="w-full h-64 p-4 border border-gray-300 rounded font-mono text-sm"
-            placeholder="Enter your class diagram code here..."
+            placeholder="Enter your activity diagram code here..."
           />
           {error && (
             <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
@@ -105,16 +112,16 @@ const ClassDiagram = () => {
       <div className="mt-8 bg-white p-5 rounded-lg shadow-md">
         <h3 className="text-xl font-semibold mb-4">Syntax Guide</h3>
         <div className="prose max-w-none">
-          <p>Use the Mermaid syntax to define your class diagram. Here's a quick reference:</p>
+          <p>Use the Mermaid flowchart syntax to define your activity diagram:</p>
           <ul className="list-disc pl-5 space-y-2">
-            <li><code>class ClassName</code> - Define a class</li>
-            <li><code>+String attributeName</code> - Public attribute</li>
-            <li><code>-int privateField</code> - Private attribute</li>
-            <li><code>+methodName()</code> - Method</li>
-            <li><code>ClassA &lt;|-- ClassB</code> - Inheritance (ClassB inherits from ClassA)</li>
-            <li><code>ClassA *-- ClassB</code> - Composition</li>
-            <li><code>ClassA o-- ClassB</code> - Aggregation</li>
-            <li><code>ClassA &lt;-- ClassB</code> - Association</li>
+            <li><code>flowchart TD</code> - Top-down flowchart (activity diagram)</li>
+            <li><code>Start([Text])</code> - Rounded oval node (start/end)</li>
+            <li><code>Process[Text]</code> - Rectangle node (process/activity)</li>
+            <li><code>Decision{Text}</code> - Diamond node (decision point)</li>
+            <li><code>A --{'>'}  B</code> - Arrow connection</li>
+            <li><code>A --{'>'}|Label| B</code> - Arrow with label</li>
+            <li><code>style NodeName fill:#color,stroke:#color</code> - Node styling</li>
+            <li><code>subgraph Title ... end</code> - Group activities into a swimlane</li>
           </ul>
         </div>
       </div>
@@ -122,4 +129,4 @@ const ClassDiagram = () => {
   );
 };
 
-export default ClassDiagram;
+export default ActivityDiagram;

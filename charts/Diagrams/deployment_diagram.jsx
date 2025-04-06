@@ -1,24 +1,50 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 
-const ClassDiagram = () => {
+const DeploymentDiagram = () => {
   const [diagramCode, setDiagramCode] = useState(
-    `classDiagram
-    class Animal {
-      +String name
-      +int age
-      +makeSound()
-    }
-    class Dog {
-      +String breed
-      +fetch()
-    }
-    class Cat {
-      +String color
-      +scratch()
-    }
-    Animal <|-- Dog
-    Animal <|-- Cat`
+    `graph TB
+    subgraph Client["Client Environment"]
+      Browser["Web Browser"]
+      MobileApp["Mobile Application"]
+    end
+    
+    subgraph Cloud["Cloud Environment"]
+      subgraph WebServerTier["Web Server Tier"]
+        LoadBalancer["Load Balancer\n(NGINX)"]
+        WebServer1["Web Server 1\n(Node.js)"]
+        WebServer2["Web Server 2\n(Node.js)"]
+      end
+      
+      subgraph ApplicationTier["Application Tier"]
+        AppServer1["App Server 1\n(Express.js)"]
+        AppServer2["App Server 2\n(Express.js)"]
+        Cache["Redis Cache"]
+      end
+      
+      subgraph DatabaseTier["Database Tier"]
+        PrimaryDB["Primary Database\n(PostgreSQL)"]
+        ReplicaDB["Replica Database\n(PostgreSQL)"]
+        
+        subgraph Storage["Storage"]
+          ObjectStorage["Object Storage\n(S3)"]
+        end
+      end
+    end
+    
+    Browser --> LoadBalancer
+    MobileApp --> LoadBalancer
+    LoadBalancer --> WebServer1
+    LoadBalancer --> WebServer2
+    WebServer1 --> AppServer1
+    WebServer2 --> AppServer2
+    AppServer1 <--> Cache
+    AppServer2 <--> Cache
+    AppServer1 --> PrimaryDB
+    AppServer2 --> PrimaryDB
+    PrimaryDB --> ReplicaDB
+    AppServer1 --> ObjectStorage
+    AppServer2 --> ObjectStorage`
   );
   
   const [error, setError] = useState(null);
@@ -69,7 +95,7 @@ const ClassDiagram = () => {
   return (
     <div className="w-full">
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Class Diagram Editor</h2>
+        <h2 className="text-2xl font-semibold mb-4">Deployment Diagram Editor</h2>
         <div className="bg-white p-5 rounded-lg shadow-md">
           <div className="flex justify-between items-center mb-4">
             <label htmlFor="diagram-code" className="text-lg font-medium">Mermaid Diagram Code:</label>
@@ -85,7 +111,7 @@ const ClassDiagram = () => {
             value={diagramCode}
             onChange={handleCodeChange}
             className="w-full h-64 p-4 border border-gray-300 rounded font-mono text-sm"
-            placeholder="Enter your class diagram code here..."
+            placeholder="Enter your deployment diagram code here..."
           />
           {error && (
             <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
@@ -105,16 +131,18 @@ const ClassDiagram = () => {
       <div className="mt-8 bg-white p-5 rounded-lg shadow-md">
         <h3 className="text-xl font-semibold mb-4">Syntax Guide</h3>
         <div className="prose max-w-none">
-          <p>Use the Mermaid syntax to define your class diagram. Here's a quick reference:</p>
+          <p>Use the Mermaid graph syntax to define your deployment diagram:</p>
           <ul className="list-disc pl-5 space-y-2">
-            <li><code>class ClassName</code> - Define a class</li>
-            <li><code>+String attributeName</code> - Public attribute</li>
-            <li><code>-int privateField</code> - Private attribute</li>
-            <li><code>+methodName()</code> - Method</li>
-            <li><code>ClassA &lt;|-- ClassB</code> - Inheritance (ClassB inherits from ClassA)</li>
-            <li><code>ClassA *-- ClassB</code> - Composition</li>
-            <li><code>ClassA o-- ClassB</code> - Aggregation</li>
-            <li><code>ClassA &lt;-- ClassB</code> - Association</li>
+            <li><code>graph TB</code> - Top to bottom graph orientation</li>
+            <li><code>subgraph Name["Label"]</code> - Create a container/node group</li>
+            <li><code>end</code> - End a subgraph definition</li>
+            <li><code>NodeName["Label"]</code> - Define a node with label</li>
+            <li><code>NodeName["Label\nMultiline"]</code> - Multi-line node labels</li>
+            <li><code>NodeA --{'>'}  NodeB</code> - Directed connection</li>
+            <li><code>NodeA {"<"}--{'>'}  NodeB</code> - Bidirectional connection</li>
+            <li><code>NodeA -- "Label" --{'>'}  NodeB</code> - Connection with label</li>
+            <li><code>style NodeA fill:#f9f,stroke:#333,stroke-width:4px</code> - Custom styling</li>
+            <li><code>class NodeA,NodeB highlight</code> - Apply CSS classes</li>
           </ul>
         </div>
       </div>
@@ -122,4 +150,4 @@ const ClassDiagram = () => {
   );
 };
 
-export default ClassDiagram;
+export default DeploymentDiagram;

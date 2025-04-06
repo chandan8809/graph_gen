@@ -1,153 +1,171 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
 import { Activity } from 'lucide-react';
 
-// Create a client-only component
-const ClassDiagram = () => {
-  const [diagramCode, setDiagramCode] = useState(
-    `classDiagram
-    class Animal {
-      +String name
-      +int age
-      +makeSound()
-    }
-    class Dog {
-      +String breed
-      +fetch()
-    }
-    class Cat {
-      +String color
-      +scratch()
-    }
-    Animal <|-- Dog
-    Animal <|-- Cat`
-  );
-  
-  const [error, setError] = useState(null);
-  const diagramRef = useRef(null);
-  const [mounted, setMounted] = useState(false);
-  const [uniqueId, setUniqueId] = useState(`mermaid-${Date.now()}`);
+// Import all diagram components with SSR disabled
+const ClassDiagram = dynamic(() => import('../charts/Diagrams/class_diagram'), { ssr: false });
+const ObjectDiagram = dynamic(() => import('../charts/Diagrams/object_diagram'), { ssr: false });
+const UseCaseDiagram = dynamic(() => import('../charts/Diagrams/use_case_diagram'), { ssr: false });
+const StateDiagram = dynamic(() => import('../charts/Diagrams/state_diagram'), { ssr: false });
+const DeploymentDiagram = dynamic(() => import('../charts/Diagrams/deployment_diagram'), { ssr: false });
+const ActivityDiagram = dynamic(() => import('../charts/Diagrams/activity_diagram'), { ssr: false });
+const SequenceDiagram = dynamic(() => import('../charts/Diagrams/sequence_diagram'), { ssr: false });
+const ComponentDiagram = dynamic(() => import('../charts/Diagrams/component_diagram'), { ssr: false });
 
-  useEffect(() => {
-    setMounted(true);
-    
-    if (mounted) {
-      renderDiagram();
-    }
-  }, [mounted]);
+const DiagramsContainer = ({ diagramType }) => {
+  // No global mermaid initialization here - each component handles its own
 
-  const renderDiagram = async () => {
-    if (!mounted) return;
-    
-    try {
-      // Generate a new ID to force re-rendering
-      setUniqueId(`mermaid-${Date.now()}`);
-      setError(null);
-      
-      // Import mermaid dynamically
-      const { default: mermaid } = await import('mermaid');
-      
-      // Reset and initialize mermaid each time for reliable rendering
-      mermaid.initialize({
-        startOnLoad: false,
-        theme: 'default',
-        securityLevel: 'loose',
-        htmlLabels: true
-      });
-      
-      // Wait for the component to update with the new ID
-      setTimeout(() => {
-        try {
-          // Clear previous diagram content and render new one
-          if (diagramRef.current) {
-            mermaid.render(uniqueId, diagramCode).then(({ svg }) => {
-              diagramRef.current.innerHTML = svg;
-            });
-          }
-        } catch (err) {
-          setError(`Rendering error: ${err.message}`);
-          console.error('Render error:', err);
-        }
-      }, 0);
-    } catch (err) {
-      setError(`Mermaid error: ${err.message}`);
-      console.error('Mermaid error:', err);
+  // Decide which diagram to show based on diagramType parameter, if provided
+  const renderDiagramByType = () => {
+    if (diagramType) {
+      switch (diagramType) {
+        case 'class':
+          return <ClassDiagram />;
+        case 'object':
+          return <ObjectDiagram />;
+        case 'usecase':
+          return <UseCaseDiagram />;
+        case 'state':
+          return <StateDiagram />;
+        case 'deployment':
+          return <DeploymentDiagram />;
+        case 'activity':
+          return <ActivityDiagram />;
+        case 'sequence':
+          return <SequenceDiagram />;
+        case 'component':
+          return <ComponentDiagram />;
+        default:
+          return null;
+      }
     }
+    return null;
   };
 
-  const handleCodeChange = (e) => {
-    setDiagramCode(e.target.value);
-  };
+  // If a specific diagram type is requested, only show that one
+  if (diagramType) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6 flex items-center">
+          <Activity className="mr-2" />
+          UML {diagramType.charAt(0).toUpperCase() + diagramType.slice(1)} Diagram Editor
+        </h1>
+        <div className="bg-white rounded-lg shadow-md p-6">
+          {renderDiagramByType()}
+        </div>
+      </div>
+    );
+  }
 
-  const handleRender = () => {
-    renderDiagram();
-  };
-
+  // Otherwise show all diagrams
   return (
-    <div className="w-full">
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Class Diagram Editor</h2>
-        <div className="bg-white p-5 rounded-lg shadow-md">
-          <div className="flex justify-between items-center mb-4">
-            <label htmlFor="diagram-code" className="text-lg font-medium">Mermaid Diagram Code:</label>
-            <button 
-              onClick={handleRender}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Render Diagram
-            </button>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6 flex items-center">
+        <Activity className="mr-2" />
+        UML Diagram Editor
+      </h1>
+      
+      <div className="space-y-16">
+        <section id="class-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Class Diagram</h2>
+            <ClassDiagram />
           </div>
-          <textarea
-            id="diagram-code"
-            value={diagramCode}
-            onChange={handleCodeChange}
-            className="w-full h-64 p-4 border border-gray-300 rounded font-mono text-sm"
-            placeholder="Enter your class diagram code here..."
-          />
-          {error && (
-            <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-        </div>
+        </section>
+        
+        <section id="object-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Object Diagram</h2>
+            <ObjectDiagram />
+          </div>
+        </section>
+        
+        <section id="usecase-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Use Case Diagram</h2>
+            <UseCaseDiagram />
+          </div>
+        </section>
+        
+        <section id="state-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">State Diagram</h2>
+            <StateDiagram />
+          </div>
+        </section>
+        
+        <section id="deployment-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Deployment Diagram</h2>
+            <DeploymentDiagram />
+          </div>
+        </section>
+        
+        <section id="activity-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Activity Diagram</h2>
+            <ActivityDiagram />
+          </div>
+        </section>
+        
+        <section id="sequence-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Sequence Diagram</h2>
+            <SequenceDiagram />
+          </div>
+        </section>
+        
+        <section id="component-diagram">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">Component Diagram</h2>
+            <ComponentDiagram />
+          </div>
+        </section>
       </div>
       
-      <div className="bg-white p-5 rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold mb-4">Diagram Preview</h3>
-        <div className="border border-gray-200 rounded-lg p-6 bg-gray-50 overflow-auto">
-          {mounted ? (
-            <div ref={diagramRef} className="diagram-container">
-              <div className="flex justify-center items-center h-64">
-                <p className="text-gray-500">Click 'Render Diagram' to see the preview</p>
-              </div>
-            </div>
-          ) : (
-            <div className="flex justify-center items-center h-64">
-              <p className="text-gray-500">Loading...</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="mt-8 bg-white p-5 rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold mb-4">Syntax Guide</h3>
-        <div className="prose max-w-none">
-          <p>Use the Mermaid syntax to define your class diagram. Here's a quick reference:</p>
-          <ul className="list-disc pl-5 space-y-2">
-            <li><code>class ClassName</code> - Define a class</li>
-            <li><code>+String attributeName</code> - Public attribute</li>
-            <li><code>-int privateField</code> - Private attribute</li>
-            <li><code>+methodName()</code> - Method</li>
-            <li><code>ClassA &lt;|-- ClassB</code> - Inheritance (ClassB inherits from ClassA)</li>
-            <li><code>ClassA *-- ClassB</code> - Composition</li>
-            <li><code>ClassA o-- ClassB</code> - Aggregation</li>
-            <li><code>ClassA &lt;-- ClassB</code> - Association</li>
-          </ul>
+      <div className="mt-12 bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-semibold mb-4">About UML Diagrams</h2>
+        <p className="mb-4">
+          Unified Modeling Language (UML) is a standardized modeling language that helps in visualizing, specifying, 
+          constructing, and documenting the artifacts of a software system.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Class Diagrams</h3>
+            <p className="text-gray-600">Show the static structure of classes, their attributes, methods, and relationships.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Object Diagrams</h3>
+            <p className="text-gray-600">Show instances of classes (objects) at a specific point in time and their relationships.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Use Case Diagrams</h3>
+            <p className="text-gray-600">Illustrate system functionality from the user's perspective and actor interactions.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">State Diagrams</h3>
+            <p className="text-gray-600">Model the behavior of objects through finite state transitions and events.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Deployment Diagrams</h3>
+            <p className="text-gray-600">Show the physical architecture and deployment of software components to hardware nodes.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Activity Diagrams</h3>
+            <p className="text-gray-600">Illustrate the flow of control and data among activities in a process.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Sequence Diagrams</h3>
+            <p className="text-gray-600">Show the sequence of messages and interactions between objects over time.</p>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-2">Component Diagrams</h3>
+            <p className="text-gray-600">Describe how components are wired together to form larger components or software systems.</p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-// Export as a dynamic component with SSR disabled
-export default dynamic(() => Promise.resolve(ClassDiagram), { ssr: false });
+export default DiagramsContainer;

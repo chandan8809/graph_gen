@@ -1,24 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 
-const ClassDiagram = () => {
+const ObjectDiagram = () => {
   const [diagramCode, setDiagramCode] = useState(
     `classDiagram
-    class Animal {
-      +String name
-      +int age
-      +makeSound()
+    class Car_Instance {
+      +String make: "Toyota"
+      +String model: "Corolla"
+      +int year: 2020
+      +String color: "Blue"
     }
-    class Dog {
-      +String breed
-      +fetch()
+    class Driver_Instance {
+      +String name: "John Smith"
+      +int age: 35
+      +String licenseId: "D12345"
     }
-    class Cat {
-      +String color
-      +scratch()
+    class Insurance_Instance {
+      +String provider: "SafeDrive"
+      +String policyNumber: "POL-987654"
+      +Date expiryDate: "2023-12-31"
     }
-    Animal <|-- Dog
-    Animal <|-- Cat`
+    Driver_Instance "1" --> "1" Car_Instance : drives
+    Car_Instance "1" --> "1" Insurance_Instance : covered by`
   );
   
   const [error, setError] = useState(null);
@@ -69,7 +72,7 @@ const ClassDiagram = () => {
   return (
     <div className="w-full">
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Class Diagram Editor</h2>
+        <h2 className="text-2xl font-semibold mb-4">Object Diagram Editor</h2>
         <div className="bg-white p-5 rounded-lg shadow-md">
           <div className="flex justify-between items-center mb-4">
             <label htmlFor="diagram-code" className="text-lg font-medium">Mermaid Diagram Code:</label>
@@ -85,7 +88,7 @@ const ClassDiagram = () => {
             value={diagramCode}
             onChange={handleCodeChange}
             className="w-full h-64 p-4 border border-gray-300 rounded font-mono text-sm"
-            placeholder="Enter your class diagram code here..."
+            placeholder="Enter your object diagram code here..."
           />
           {error && (
             <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
@@ -105,16 +108,14 @@ const ClassDiagram = () => {
       <div className="mt-8 bg-white p-5 rounded-lg shadow-md">
         <h3 className="text-xl font-semibold mb-4">Syntax Guide</h3>
         <div className="prose max-w-none">
-          <p>Use the Mermaid syntax to define your class diagram. Here's a quick reference:</p>
+          <p>Use the Mermaid syntax to define your object diagram. Object diagrams use class diagram syntax with specific instances:</p>
           <ul className="list-disc pl-5 space-y-2">
-            <li><code>class ClassName</code> - Define a class</li>
-            <li><code>+String attributeName</code> - Public attribute</li>
-            <li><code>-int privateField</code> - Private attribute</li>
-            <li><code>+methodName()</code> - Method</li>
-            <li><code>ClassA &lt;|-- ClassB</code> - Inheritance (ClassB inherits from ClassA)</li>
-            <li><code>ClassA *-- ClassB</code> - Composition</li>
-            <li><code>ClassA o-- ClassB</code> - Aggregation</li>
-            <li><code>ClassA &lt;-- ClassB</code> - Association</li>
+            <li><code>class ObjectName_Instance</code> - Define an object instance</li>
+            <li><code>+Type attributeName: "value"</code> - Attribute with specific value</li>
+            <li><code>ObjectA "1" --{'>'}  "1" ObjectB : relationship</code> - Define relationship with multiplicity</li>
+            <li><code>ObjectA -- ObjectB : associates with</code> - Simple association</li>
+            <li><code>note "text" as N1</code> - Add explanatory notes</li>
+            <li><code>N1 -- ObjectA</code> - Connect note to object</li>
           </ul>
         </div>
       </div>
@@ -122,4 +123,4 @@ const ClassDiagram = () => {
   );
 };
 
-export default ClassDiagram;
+export default ObjectDiagram;
