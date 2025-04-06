@@ -13,7 +13,7 @@ const ChartVisualizer = () => {
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView();
     }
   };
 
@@ -52,7 +52,7 @@ const ChartVisualizer = () => {
           <div className="bg-blue-500 rounded-lg p-2">
             <Activity className="h-8 w-8 text-white" />
           </div>
-          <h1 className="ml-3 text-2xl font-bold text-blue-600">ChartCraft</h1>
+          <h1 className="ml-3 text-2xl font-bold text-blue-600">Chart Plot</h1>
         </div>
         <nav className="hidden md:flex items-center space-x-8">
           <button onClick={() => scrollToSection('features')} className="text-blue-600 hover:text-blue-800 transition">Features</button>
@@ -175,6 +175,7 @@ const ChartVisualizer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {chartTypes.map((chart, index) => (
             <div 
+            onClick={() => router.push({pathname: `/chart/${chart.type}`})}
               key={index}
               className="bg-white rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer"
             >
@@ -188,10 +189,10 @@ const ChartVisualizer = () => {
                 chart.type === 'doughnut' ? 'displaying proportions with emphasis on central space' : 
                 chart.type === 'polarArea' ? 'comparing multiple variables' : 
                 'displaying multivariate data in a circular format'}</p>
-              <button onClick={() => router.push({pathname: `/chart/${chart.type}`})} className="mt-4 inline-flex items-center py-2 px-4 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-md hover:shadow-lg transition transform hover:-translate-y-1 group">
+              {/* <button onClick={() => router.push({pathname: `/chart/${chart.type}`})} className="mt-4 inline-flex items-center py-2 px-4 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-md hover:shadow-lg transition transform hover:-translate-y-1 group">
                 Select
                 <ChevronRight  className="ml-1 w-4 h-4 group-hover:ml-2 transition-all" />
-              </button>
+              </button> */}
             </div>
           ))}
         </div>
@@ -206,10 +207,10 @@ const ChartVisualizer = () => {
             <div className="bg-blue-500 rounded-lg p-2">
               <Activity className="h-6 w-6 text-white" />
             </div>
-            <h2 className="ml-3 text-xl font-bold text-blue-600">ChartCraft</h2>
+            <h2 className="ml-3 text-xl font-bold text-blue-600">Chart Plot</h2>
           </div>
           <div className="text-sm text-gray-600">
-            © {new Date().getFullYear()} ChartCraft. All rights reserved.
+            © {new Date().getFullYear()} Chart Plot. All rights reserved.
           </div>
         </div>
       </footer>

@@ -85,7 +85,7 @@ export default function ExcelLikeTableWithChartOptions({ chartType }) {
           <div className="bg-blue-500 rounded-lg p-2">
             <Activity className="h-8 w-8 text-white" />
           </div>
-          <h1 className="ml-3 text-2xl font-bold text-blue-600">ChartCraft</h1>
+          <h1 className="ml-3 text-2xl font-bold text-blue-600">Chart Plot</h1>
         </div>
       </header>
 
@@ -114,10 +114,10 @@ export default function ExcelLikeTableWithChartOptions({ chartType }) {
             <div className="bg-blue-500 rounded-lg p-2">
               <Activity className="h-6 w-6 text-white" />
             </div>
-            <h2 className="ml-3 text-xl font-bold text-blue-600">ChartCraft</h2>
+            <h2 className="ml-3 text-xl font-bold text-blue-600">Chart Plot</h2>
           </div>
           <div className="text-sm text-gray-600">
-            © {new Date().getFullYear()} ChartCraft. All rights reserved.
+            © {new Date().getFullYear()} Chart Plot. All rights reserved.
           </div>
         </div>
       </footer>
