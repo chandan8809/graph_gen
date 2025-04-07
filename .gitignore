@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+inform_divya.txt
 
 # next.js
 /.next/
