@@ -129,7 +129,7 @@ const ChartDisplay = ({ chartType="bar", tableData, onDownload }) => {
           Download Chart
         </button>
       </div>
-      <div className="bg-white p-4 rounded  w-full" style={{ height: '600px' }}>
+      <div className="bg-white p-4 rounded  w-full border border-gray-300 shadow-sm flex justify-center items-center" style={{ height: '500px' }}>
         <canvas ref={chartRef}></canvas>
       </div>
     </div>
