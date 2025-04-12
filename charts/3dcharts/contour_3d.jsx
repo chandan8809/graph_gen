@@ -33,7 +33,11 @@ const ContourPlot = () => {
       height: 500
     };
     
-    Plotly.newPlot(chartRef.current, data, layout, {responsive: true});
+    try {
+      Plotly.newPlot(chartRef.current, data, layout, {responsive: true});
+    } catch (error) {
+      console.error('Error plotting chart:', error);
+    }
   }, []);
   
   return <div className="w-full h-[500px]" ref={chartRef}></div>;
