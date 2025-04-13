@@ -1,8 +1,10 @@
 import React from 'react';
-import BarChart from '@/charts/3dcharts/bar_3d';
-import ContourPlot from '@/charts/3dcharts/contour_3d';
-import MeshPlot from '@/charts/3dcharts/mesh_3d';
-import NetworkGraph from '@/charts/3dcharts/network_3d';
+import BarChart from '../charts/3dcharts/bar_3d';
+import ContourPlot from '../charts/3dcharts/contour_3d';
+import MeshPlot from '../charts/3dcharts/mesh_3d';
+import NetworkGraph from '../charts/3dcharts/network_3d';
+import ScatterPlot from '../charts/3dcharts/scatter_3d';
+import SurfacePlot from '../charts/3dcharts/surface_3d';
 
 // Create a simple wrapper component
 const ThreeDChartsContainer = ({ chartType }) => {
@@ -17,6 +19,10 @@ const ThreeDChartsContainer = ({ chartType }) => {
         return <MeshPlot />;
       case 'network':
         return <NetworkGraph />;
+      case 'scatter':
+        return <ScatterPlot />;
+      case 'surface':
+        return <SurfacePlot />;
       default:
         return <div>Select a chart type</div>;
     }
